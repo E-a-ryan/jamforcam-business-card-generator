@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="3.5in" height="2in" viewBox="0 0 252 144">
+  <g id="Firstname">
+    <text transform="translate(6.53 31.72)" fill="#231f20" font-family="SpecialGothic-Regular, &apos;Special Gothic&apos;" font-size="32" font-variation-settings="&apos;wght&apos; 400, &apos;wdth&apos; 100"><tspan x="0" y="0">Fi</tspan><tspan x="23.2" y="0" letter-spacing="-.02em">r</tspan><tspan x="34.11" y="0">stname</tspan></text>
+  </g>
+  <g id="Lastname">
+    <text transform="translate(6.5 62.85)" fill="#231f20" font-family="SpecialGothic-Regular, &apos;Special Gothic&apos;" font-size="32" font-variation-settings="&apos;wght&apos; 400, &apos;wdth&apos; 100"><tspan x="0" y="0" letter-spacing="0em">L</tspan><tspan x="16.06" y="0">astname</tspan></text>
+  </g>
+  <g id="Title">
+    <text transform="translate(8 104.94)" fill="#231f20" font-family="SpecialGothic-Medium, &apos;Special Gothic&apos;" font-size="12" font-variation-settings="&apos;wght&apos; 500, &apos;wdth&apos; 100" font-weight="500"><tspan x="0" y="0" letter-spacing="-.02em">P</tspan><tspan x="7.18" y="0">e</tspan><tspan x="13.49" y="0" letter-spacing="-.01em">r</tspan><tspan x="17.93" y="0">so</tspan><tspan x="30.23" y="0" letter-spacing="-.04em">n</tspan><tspan x="36.3" y="0" letter-spacing="-.06em">’</tspan><tspan x="38.17" y="0">s</tspan><tspan x="43.81" y="0" letter-spacing="-.03em"> </tspan><tspan x="45.95" y="0" letter-spacing="0em">T</tspan><tspan x="53.12" y="0">itle </tspan><tspan x="72.24" y="0" letter-spacing="0em">H</tspan><tspan x="80.44" y="0">e</tspan><tspan x="86.75" y="0" letter-spacing="-.02em">r</tspan><tspan x="91.09" y="0" letter-spacing="0em">e</tspan></text>
+  </g>
+  <g id="Email">
+    <text transform="translate(8.2 119.94)" fill="#231f20" font-family="SpecialGothic-Regular, &apos;Special Gothic&apos;" font-size="12" font-variation-settings="&apos;wght&apos; 400, &apos;wdth&apos; 100"><tspan x="0" y="0">email@ja</tspan><tspan x="45.24" y="0" letter-spacing="0em">m</tspan><tspan x="54.95" y="0" letter-spacing="-.01em">f</tspan><tspan x="58.5" y="0">o</tspan><tspan x="64.93" y="0" letter-spacing="-.03em">r</tspan><tspan x="68.92" y="0">cam.com</tspan></text>
+  </g>
+  <g id="Phone">
+    <text transform="translate(8.2 135.08)" fill="#231f20" font-family="SpecialGothic-Regular, &apos;Special Gothic&apos;" font-size="12" font-variation-settings="&apos;wght&apos; 400, &apos;wdth&apos; 100"><tspan x="0" y="0">123–456</tspan><tspan x="45.18" y="0" letter-spacing="-.06em">–</tspan><tspan x="50.8" y="0" letter-spacing="0em">7</tspan><tspan x="56.69" y="0">890</tspan></text>
+  </g>
+</svg>

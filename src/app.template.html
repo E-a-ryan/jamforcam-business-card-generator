@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jam for Cam — Business Cards</title>
+<style>
+@font-face { font-family: 'SG-regular'; font-weight: 400; src: url(data:font/ttf;base64,__FONT_REGULAR__) format('truetype'); }
+@font-face { font-family: 'SG-medium'; font-weight: 500; src: url(data:font/ttf;base64,__FONT_MEDIUM__) format('truetype'); }
+@font-face { font-family: 'SG'; font-weight: 400; src: url(data:font/ttf;base64,__FONT_REGULAR__) format('truetype'); }
+@font-face { font-family: 'SG'; font-weight: 500; src: url(data:font/ttf;base64,__FONT_MEDIUM__) format('truetype'); }
+
+:root { --ink: #111; --mid: #777; --soft: #aaa; --rule: #e4e4e4; --bg: #fff; --well: #f6f6f6; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font: 400 13px/1.45 'SG', system-ui, sans-serif; color: var(--ink); background: var(--bg);
+  display: grid; grid-template-columns: 300px 1fr; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+svg.i { width: 18px; height: 18px; fill: currentColor; flex: none; }
+
+/* left panel */
+aside { border-right: 1px solid var(--rule); display: flex; flex-direction: column; height: 100vh; overflow: auto; }
+.head { padding: 20px 20px 18px; border-bottom: 1px solid var(--rule); }
+.head b { font-weight: 500; display: block; }
+.head span { color: var(--mid); }
+section { padding: 14px 20px 14px; border-bottom: 1px solid var(--rule); }
+h2 { font: inherit; font-weight: 500; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+h2 .note { font-weight: 400; color: var(--soft); margin-left: auto; }
+.field { display: block; padding: 6px 0 5px; }
+.field + .field { border-top: 1px solid var(--rule); }
+.field label { display: flex; color: var(--mid); }
+.field label .req { margin-left: auto; color: var(--soft); }
+.field input { display: block; width: 100%; border: 0; outline: 0; background: none; padding: 2px 0 0; }
+.field input::placeholder { color: #c8c8c8; }
+.msg { display: none; align-items: center; gap: 4px; color: var(--mid); padding-top: 3px; }
+.msg svg.i { width: 14px; height: 14px; }
+.msg.on { display: flex; }
+.msg.block { color: var(--ink); font-weight: 500; }
+.msg .fix { margin-left: auto; border: 0; border-bottom: 1px solid currentColor; background: none; color: var(--ink); font-weight: 500; cursor: pointer; padding: 0; }
+
+/* palettes */
+.swatches { display: grid; gap: 0; }
+.sw { display: flex; align-items: center; gap: 10px; padding: 6px 0; border: 0; background: none; text-align: left; cursor: pointer; width: 100%; }
+.sw + .sw { border-top: 1px solid var(--rule); }
+.sw .chips { display: flex; }
+.sw .chip { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+.sw .lbl { color: var(--mid); }
+.sw .check { margin-left: auto; visibility: hidden; }
+.sw[aria-pressed="true"] .lbl { color: var(--ink); font-weight: 500; }
+.sw[aria-pressed="true"] .check { visibility: visible; }
+.swatches.locked { opacity: .38; pointer-events: none; }
+.locknote { color: var(--soft); padding-top: 8px; }
+
+/* actions */
+.actions { margin-top: auto; padding: 16px 20px 20px; border-top: 1px solid var(--rule); display: grid; gap: 10px; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border: 1px solid var(--ink);
+  background: var(--ink); color: #fff; font-weight: 500; cursor: pointer; }
+.btn:disabled { background: none; color: var(--soft); border-color: var(--rule); cursor: not-allowed; }
+.tog:hover { color: var(--ink); }
+.files { color: var(--soft); }
+.files:empty { display: none; }
+
+/* preview */
+main { height: 100vh; display: flex; flex-direction: column; background: var(--well); min-width: 0; }
+.bar { display: flex; align-items: center; height: 57px; padding: 0 20px; border-bottom: 1px solid var(--rule); background: var(--bg); color: var(--mid); gap: 16px; }
+.bar .spec { margin-right: auto; }
+.tog { display: flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--mid); cursor: pointer; }
+.tog[aria-pressed="true"] { color: var(--ink); font-weight: 500; }
+.stage { flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px; padding: 40px; }
+figure { width: min(100%, 560px); }
+figcaption { color: var(--mid); padding-bottom: 8px; display: flex; }
+figcaption span { margin-left: auto; color: var(--soft); }
+svg.card { display: block; width: 100%; height: auto; background: #fff; box-shadow: 0 0 0 1px var(--rule); }
+.legend { display: none; gap: 16px; color: var(--soft); padding-top: 8px; }
+.guides-on .legend { display: flex; }
+.legend i { display: inline-block; width: 14px; height: 0; border-top: 1px solid #111; vertical-align: middle; margin-right: 6px; }
+.legend i.d { border-top: 1px dashed #999; } .legend i.b { border-top: 1px solid #ccc; }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="head"><b>Jam for Cam</b><span>Business Card Generator</span></div>
+
+  <section>
+    <h2>Name</h2>
+    <div class="field"><label for="firstname">First name<span class="req">Required</span></label><input id="firstname" autocomplete="given-name" placeholder="Firstname"><div class="msg" data-for="firstname"></div></div>
+    <div class="field"><label for="lastname">Last name<span class="req">Required</span></label><input id="lastname" autocomplete="family-name" placeholder="Lastname"><div class="msg" data-for="lastname"></div></div>
+  </section>
+
+  <section>
+    <h2>Details <span class="note">Empty lines are removed</span></h2>
+    <div class="field"><label for="title">Title</label><input id="title" autocomplete="organization-title" placeholder="Person’s Title Here"><div class="msg" data-for="title"></div></div>
+    <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="email@jamforcam.com"><div class="msg" data-for="email"></div></div>
+    <div class="field"><label for="phone">Phone</label><input id="phone" type="tel" autocomplete="tel-national" placeholder="123–456–7890"><div class="msg" data-for="phone"></div></div>
+  </section>
+
+  <section>
+    <h2>Color <span class="note" id="colornote"></span></h2>
+    <div class="swatches" id="swatches"></div>
+    <div class="locknote" id="locknote"></div>
+  </section>
+
+  <div class="actions">
+    <button class="btn" id="download" disabled><svg class="i" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm14-11h-4V3H9v6H5l7 7 7-7z"/></svg>Download PDFs</button>
+    <div class="files" id="files"></div>
+  </div>
+</aside>
+
+<main id="main">
+  <div class="bar">
+    <span class="spec">3.5 × 2 in &nbsp;·&nbsp; 0.125 in bleed &nbsp;·&nbsp; CMYK preview, coated stock</span>
+    <button class="tog" id="guides" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>Guides</button>
+  </div>
+  <div class="stage">
+    <figure><figcaption>Front</figcaption><div id="front"></div></figure>
+    <figure><figcaption>Back</figcaption><div id="back"></div>
+      <div class="legend"><span><i></i>Trim</span><span><i class="d"></i>Safe area</span><span><i class="b"></i>Bleed</span></div></figure>
+  </div>
+</main>
+
+<script>/*__PDFLIB__*/</script>
+<script>/*__ENGINE__*/</script>
+<script>
+/* ==========================================================================
+   COLOR PALETTES — Jam for Cam brand colors.
+   CMYK (0–100) is what goes into the PDF. Values were converted from the brand
+   swatches to FOGRA39 coated (relative colorimetric). hex is a soft proof of that
+   CMYK build, so the preview shows how it will print, not the screen color.
+   frontBg / backBg: card backgrounds · logo · name · text (title, email, phone)
+   ========================================================================== */
+const PALETTES_READY = true;
+const PALETTES = [
+  {"id": "red", "label": "Red", "frontBg": {"hex": "#e72b40", "cmyk": [0, 93, 69, 0]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "name": {"hex": "#e72b40", "cmyk": [0, 93, 69, 0]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}},
+  {"id": "yellow", "label": "Yellow", "frontBg": {"hex": "#f8cc18", "cmyk": [4, 19, 91, 0]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "name": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}},
+  {"id": "lime", "label": "Lime", "frontBg": {"hex": "#d6da3b", "cmyk": [24, 0, 86, 0]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "name": {"hex": "#d6da3b", "cmyk": [24, 0, 86, 0]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}},
+  {"id": "purple", "label": "Purple", "frontBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#978bc1", "cmyk": [47, 48, 0, 0]}, "name": {"hex": "#978bc1", "cmyk": [47, 48, 0, 0]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}},
+  {"id": "blue", "label": "Blue", "frontBg": {"hex": "#62c0ed", "cmyk": [59, 6, 0, 0]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "name": {"hex": "#62c0ed", "cmyk": [59, 6, 0, 0]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}},
+  {"id": "pink", "label": "Pink", "frontBg": {"hex": "#eddced", "cmyk": [7, 17, 0, 0]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "name": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}},
+  {"id": "orange", "label": "Orange", "frontBg": {"hex": "#eb5d13", "cmyk": [0, 74, 99, 0]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "name": {"hex": "#eb5d13", "cmyk": [0, 74, 99, 0]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}},
+  {"id": "bw", "label": "Black & White", "frontBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "name": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}},
+  {"id": "wb", "label": "White on Black", "frontBg": {"hex": "#070d0d", "cmyk": [60, 40, 40, 100]}, "backBg": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "logo": {"hex": "#ffffff", "cmyk": [0, 0, 0, 0]}, "name": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}, "text": {"hex": "#1f1f1d", "cmyk": [0, 0, 0, 100]}}
+];
+
+const TEMPLATES = { front: __FRONT_SVG__, back: __BACK_SVG__ };
+CardEngine.loadFonts(__FONT_DATA__);
+const E = CardEngine;
+const tpl = { front: E.parseTemplate(TEMPLATES.front), back: E.parseTemplate(TEMPLATES.back) };
+
+const ICON_WARN = '<svg class="i" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
+const ICON_CHECK = '<svg class="i check" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+const ICON_LOCK = '<svg class="i" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
+
+const state = { values: {}, palette: null, guides: false, touched: {}, notes: {} };
+
+/* ---- Input checks ------------------------------------------------------------
+   Phone: digits only, auto-formatted as 123–456–7890 while typing, max 10 digits.
+   Title / names: catch details typed into the wrong field.                      */
+const DASH = '–'; // matches the en dash used in the card template
+function formatDigits(d) {
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return d.slice(0, 3) + DASH + d.slice(3);
+  return d.slice(0, 3) + DASH + d.slice(3, 6) + DASH + d.slice(6);
+}
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+function validate() {
+  const v = k => (state.values[k] || '').trim();
+  const out = {};
+  const add = (f, level, msg, action) => (out[f] = out[f] || []).push({ level, msg, action });
+  for (const f of ['firstname', 'lastname']) {
+    if (v(f).includes('@')) add(f, 'block', 'Looks like an email — names can’t include @');
+    else if (/\d/.test(v(f))) add(f, 'warn', 'Names usually don’t include numbers');
+  }
+  const t = v('title');
+  if (t.includes('@')) add('title', 'block', 'Looks like an email address', v('email') ? null : 'Move to Email');
+  else if (t.replace(/\D/g, '').length >= 7) add('title', 'block', 'Looks like a phone number', v('phone') ? null : 'Move to Phone');
+  else if (/https?:|www\.|\.(com|org|net)\b/i.test(t)) add('title', 'block', 'Looks like a web address');
+  const e = v('email');
+  if (e && /\s/.test(e)) add('email', 'block', 'Email can’t contain spaces');
+  else if (e && state.touched.email && !EMAIL_RE.test(e)) add('email', 'block', 'Check the email address');
+  const d = v('phone').replace(/\D/g, '');
+  if (state.notes.phone) add('phone', 'warn', state.notes.phone);
+  if (d && d.length < 10 && state.touched.phone) add('phone', 'block', 'Phone needs 10 digits (' + d.length + ' so far)');
+  return out;
+}
+function moveTo(from, to) {
+  const el = $(to); el.value = $(from).value.trim(); $(from).value = '';
+  state.values[to] = el.value; state.values[from] = '';
+  if (to === 'phone') onPhone(); else render();
+  el.focus();
+}
+const $ = id => document.getElementById(id);
+const toColor = c => c ? { hex: c.hex, cmyk: c.cmyk.map(v => v / 100) } : null;
+
+function colorsFor(side) {
+  const p = PALETTES_READY && PALETTES.find(p => p.id === state.palette);
+  return p ? { bg: toColor(side === 'front' ? p.frontBg : p.backBg), logo: toColor(p.logo), name: toColor(p.name), text: toColor(p.text) } : {};
+}
+
+function fileBase() {
+  const clean = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]/g, '');
+  return clean(state.values.firstname) + clean(state.values.lastname) + '_JamforCam_BusinessCard';
+}
+
+function render() {
+  const front = E.buildSide(tpl.front, state.values, colorsFor('front'), { placeholders: true });
+  const back = E.buildSide(tpl.back, state.values, colorsFor('back'), { placeholders: true });
+  $('front').innerHTML = E.sideToSVG(front, state.guides, 'f');
+  $('back').innerHTML = E.sideToSVG(back, state.guides, 'b');
+
+  const warnings = {};
+  for (const src of [front.warnings, back.warnings, validate()])
+    for (const k in src) warnings[k] = (warnings[k] || []).concat(src[k]);
+  let blocked = false;
+  document.querySelectorAll('.msg').forEach(el => {
+    const w = warnings[el.dataset.for];
+    if (w && w.length) {
+      const isBlock = w.some(x => x.level === 'block');
+      blocked = blocked || isBlock;
+      el.className = 'msg on' + (isBlock ? ' block' : '');
+      el.innerHTML = ICON_WARN + '<span>' + w.map(x => x.msg).join(' · ') + '</span>' +
+        w.filter(x => x.action).map(x => `<button class="fix" data-from="${el.dataset.for}" data-to="${x.action.split(' ').pop().toLowerCase()}">${x.action}</button>`).join('');
+    } else { el.className = 'msg'; el.innerHTML = ''; }
+  });
+  const ready = E.cleanValue('firstname', state.values.firstname) && E.cleanValue('lastname', state.values.lastname);
+  $('download').disabled = !ready || blocked;
+  $('files').textContent = ready ? '' : 'Add a first and last name to download.';
+  $('main').classList.toggle('guides-on', state.guides);
+}
+
+function buildSwatches() {
+  const box = $('swatches');
+  box.innerHTML = PALETTES.map(p => `<button class="sw" data-id="${p.id}" aria-pressed="${state.palette === p.id}">
+    <span class="chips">${[p.frontBg, p.logo, p.name].map(c => `<span class="chip" style="background:${c.hex}"></span>`).join('')}</span>
+    <span class="lbl">${p.label}</span>${ICON_CHECK}</button>`).join('');
+  box.classList.toggle('locked', !PALETTES_READY);
+  $('colornote').innerHTML = '';
+  $('locknote').innerHTML = PALETTES_READY ? '' : '<span style="display:inline-flex;gap:4px;align-items:center">' + ICON_LOCK + 'Brand palettes coming soon</span>';
+  box.onclick = e => {
+    const b = e.target.closest('.sw'); if (!b || !PALETTES_READY) return;
+    state.palette = b.dataset.id;
+    box.querySelectorAll('.sw').forEach(x => x.setAttribute('aria-pressed', x.dataset.id === state.palette));
+    render();
+  };
+}
+
+let lastPhoneDigits = '';
+function onPhone(ev) {
+  const el = $('phone');
+  const raw = el.value;
+  const caret = el.selectionStart == null ? raw.length : el.selectionStart;
+  let before = raw.slice(0, caret).replace(/\D/g, '').length;
+  let d = raw.replace(/\D/g, '');
+  let note = '';
+  if (/[^\d\s().\-–—+]/.test(raw)) note = 'Numbers only — other characters were removed';
+  // Backspacing over a dash should delete the digit before it.
+  if (ev && ev.inputType === 'deleteContentBackward' && d === lastPhoneDigits && before > 0) {
+    d = d.slice(0, before - 1) + d.slice(before); before--;
+  }
+  if (d[0] === '1' || d[0] === '0') { if (d[0] === '1' && d.length > 10) note = note || 'Country code removed'; d = d.replace(/^[01]+/, ''); before = Math.max(0, before - 1); }
+  if (d.length > 10) { d = d.slice(0, 10); note = 'Phone numbers are 10 digits'; }
+  const f = formatDigits(d);
+  el.value = f;
+  let pos = 0, seen = 0;
+  while (pos < f.length && seen < before) { if (/\d/.test(f[pos])) seen++; pos++; }
+  if (document.activeElement === el) el.setSelectionRange(pos, pos);
+  lastPhoneDigits = d;
+  state.values.phone = f;
+  if (note) state.notes.phone = note; // stays until the field is left
+  if (!d) state.notes.phone = "";
+  render();
+}
+E.FIELDS.forEach(f => {
+  const el = $(f);
+  if (f === 'phone') el.addEventListener('input', onPhone);
+  else el.addEventListener('input', () => { state.values[f] = el.value; render(); });
+  el.addEventListener('blur', () => { state.touched[f] = true; if (f === 'phone') state.notes.phone = ''; render(); });
+});
+$('phone').setAttribute('inputmode', 'numeric');
+$('phone').setAttribute('maxlength', '20');
+document.addEventListener('mousedown', e => { const b = e.target.closest('.fix'); if (b) { e.preventDefault(); moveTo(b.dataset.from, b.dataset.to); } });
+
+$('guides').onclick = () => { state.guides = !state.guides; $('guides').setAttribute('aria-pressed', state.guides); render(); };
+
+// In the hosted version, saves go through the page's downloads capability;
+// opened as a standalone file, a normal browser download is used.
+let DL = null;
+try { if (window.claude && typeof window.claude.use === 'function') window.claude.use('downloads').then(d => { DL = d; }).catch(() => {}); } catch (e) {}
+async function saveBlob(bytes, name, type) {
+  if (DL) {
+    try { await DL.save({ filename: name, data: new Blob([bytes], { type }) }); return true; }
+    catch (e) { if (e && (e.code === 'declined' || e.code === 'rate_limited')) return false; }
+  }
+  const url = URL.createObjectURL(new Blob([bytes], { type }));
+  const a = document.createElement('a'); a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  return true;
+}
+
+$('download').onclick = async () => {
+  const btn = $('download'); btn.disabled = true;
+  try {
+    const who = (E.cleanValue('firstname', state.values.firstname) + ' ' + E.cleanValue('lastname', state.values.lastname)).trim();
+    const front = await E.sideToPDF(E.buildSide(tpl.front, state.values, colorsFor('front')), { title: who + ' — Jam for Cam business card (front)', subject: 'Front' });
+    const back = await E.sideToPDF(E.buildSide(tpl.back, state.values, colorsFor('back')), { title: who + ' — Jam for Cam business card (back)', subject: 'Back' });
+    await saveBlob(front, fileBase() + '_Front.pdf', 'application/pdf');
+    if (!DL) await new Promise(r => setTimeout(r, 600));
+    await saveBlob(back, fileBase() + '_Back.pdf', 'application/pdf');
+  } catch (err) { console.error(err); alertless('Something went wrong making the PDFs.'); }
+  render();
+};
+function alertless(msg) { $('files').textContent = msg; }
+
+
+state.palette = 'red';
+buildSwatches();
+document.fonts.ready.then(render);
+render();
+</script>
+</body>
+</html>
