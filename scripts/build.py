@@ -1,4 +1,4 @@
-"""Build dist/JamforCam_BusinessCard_Generator.html — one self-contained file.
+"""Build the tool: dist/JamforCam_BusinessCard_Generator.html and docs/index.html (GitHub Pages).
 
   python3 scripts/build.py
 
@@ -22,6 +22,8 @@ html = html.replace("/*__PDFLIB__*/", pdflib).replace("/*__ENGINE__*/", (ROOT / 
 html = html.replace("__FONT_DATA__", json.dumps(data, separators=(",", ":")))
 html = html.replace("__FRONT_SVG__", json.dumps(front)).replace("__BACK_SVG__", json.dumps(back))
 html = html.replace("__FONT_REGULAR__", fonts["regular"]["b64"]).replace("__FONT_MEDIUM__", fonts["medium"]["b64"])
-out = ROOT / "dist/JamforCam_BusinessCard_Generator.html"
-out.write_text(html)
-print(f"Built {out.relative_to(ROOT)} ({len(html)//1024} KB)")
+# dist/ is the file to hand off; docs/index.html is the same tool served by GitHub Pages.
+for out in (ROOT / "dist/JamforCam_BusinessCard_Generator.html", ROOT / "docs/index.html"):
+    out.parent.mkdir(exist_ok=True)
+    out.write_text(html)
+    print(f"Built {out.relative_to(ROOT)} ({len(html)//1024} KB)")

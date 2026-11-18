@@ -2,7 +2,9 @@
 
 A single-file, offline web tool that lets Jam for Cam staff fill in their details, pick a brand palette, and download print-ready PDFs of their business card.
 
-**To hand off:** send `dist/JamforCam_BusinessCard_Generator.html`. It opens in any modern browser, works offline, and has everything (fonts, templates, PDF engine) built in.
+**Live:** https://e-a-ryan.github.io/jamforcam-business-card-generator/ (GitHub Pages, served from `docs/`).
+
+**To hand off as a file:** send `dist/JamforCam_BusinessCard_Generator.html`. It opens in any modern browser, works offline, and has everything (fonts, templates, PDF engine) built in.
 
 ## What it outputs
 
@@ -75,7 +77,7 @@ Requires Python 3 and fontTools (`pip install fonttools`).
 python3 scripts/build.py
 ```
 
-This subsets the fonts in `fonts/` to Latin, extracts their metrics and kerning, and inlines everything into `dist/JamforCam_BusinessCard_Generator.html`. Rebuild after changing anything in `src/`, `templates/` or `fonts/`.
+This subsets the fonts in `fonts/` to Latin, extracts their metrics and kerning, and inlines everything into `dist/JamforCam_BusinessCard_Generator.html` and `docs/index.html`. Commit and push both; Pages updates within a minute or two. Rebuild after changing anything in `src/`, `templates/` or `fonts/`.
 
 ## Structure
 
@@ -87,6 +89,7 @@ fonts/                  Special Gothic Regular + Medium (full TTFs, SIL OFL 1.1)
 vendor/                 pdf-lib 1.17.1 (MIT)
 scripts/                build
 dist/                   the built, hand-off-ready tool
+docs/index.html         the same build, published by GitHub Pages
 ```
 
 ## Notes
