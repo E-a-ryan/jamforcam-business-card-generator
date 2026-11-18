@@ -29,6 +29,7 @@ h2 .note { font-weight: 400; color: var(--soft); margin-left: auto; }
 .field label .req { margin-left: auto; color: var(--soft); }
 .field input { display: block; width: 100%; border: 0; outline: 0; background: none; padding: 2px 0 0; }
 .field input::placeholder { color: #c8c8c8; }
+.field input[hidden] { display: none; }
 .seg { display: flex; margin-top: 6px; width: 100%; }
 .seg button { flex: 1 1 auto; min-width: 0; height: 28px; padding: 0 3px; border: 1px solid var(--rule); background: none; color: var(--mid); cursor: pointer; white-space: nowrap; }
 .seg button + button { border-left: 0; }
@@ -41,9 +42,9 @@ h2 .note { font-weight: 400; color: var(--soft); margin-left: auto; }
 .msg.block { color: var(--ink); font-weight: 500; }
 .msg .fix { margin-left: auto; border: 0; border-bottom: 1px solid currentColor; background: none; color: var(--ink); font-weight: 500; cursor: pointer; padding: 0; }
 
-.swatches { display: grid; }
-.sw { display: flex; align-items: center; gap: 10px; padding: 6px 0; border: 0; background: none; text-align: left; cursor: pointer; width: 100%; }
-.sw + .sw { border-top: 1px solid var(--rule); }
+.swatches { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; }
+.sw { display: flex; align-items: center; gap: 10px; padding: 6px 0; border: 0; border-top: 1px solid var(--rule); background: none; text-align: left; cursor: pointer; width: 100%; min-width: 0; }
+.sw:first-child { grid-column: 1 / -1; border-top: 0; }
 .sw .chip { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
 .sw .lbl { color: var(--mid); }
 .sw .check { margin-left: auto; visibility: hidden; }
