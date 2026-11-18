@@ -110,7 +110,7 @@ dialog::backdrop { background: rgba(0,0,0,.25); }
 </aside>
 
 <main>
-  <div class="bar"><span>Gmail signature &nbsp;·&nbsp; Helvetica 12 px &nbsp;·&nbsp; logo 200 px</span></div>
+  <div class="bar"><span>Gmail signature &nbsp;·&nbsp; Name Arial 13 px &nbsp;·&nbsp; details Helvetica 12 px &nbsp;·&nbsp; logo 200 px</span></div>
   <div class="stage">
     <figure>
       <figcaption>Preview<span>Actual size</span></figcaption>
@@ -214,7 +214,9 @@ function signatureHTML(logoSrc, preview) {
     if (!v) return `<span style="color:#bbbbbb;">${esc(SAMPLE[f])}</span>`;
     return wrap ? wrap(esc(v), v) : esc(v);
   };
-  const row = (html, bold) => `<tr><td style="${td}${bold ? 'font-weight:bold;' : ''}">${html}</td></tr>`;
+  // The name matches Gmail's default body text: Arial at 13px.
+  const nameTd = 'font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:100%;color:#000000;padding:0;font-weight:bold;';
+  const row = (html, bold) => `<tr><td style="${bold ? nameTd : td}">${html}</td></tr>`;
   const space = px => `<tr><td style="height:${px}px;line-height:${px}px;font-size:1px;padding:0;">&nbsp;</td></tr>`;
   const name = (val('firstname') || val('lastname'))
     ? esc((val('firstname') + ' ' + val('lastname')).trim())
