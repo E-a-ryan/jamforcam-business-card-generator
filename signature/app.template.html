@@ -29,6 +29,12 @@ h2 .note { font-weight: 400; color: var(--soft); margin-left: auto; }
 .field label .req { margin-left: auto; color: var(--soft); }
 .field input { display: block; width: 100%; border: 0; outline: 0; background: none; padding: 2px 0 0; }
 .field input::placeholder { color: #c8c8c8; }
+.seg { display: flex; margin-top: 6px; width: 100%; }
+.seg button { flex: 1 1 auto; min-width: 0; height: 28px; padding: 0 3px; border: 1px solid var(--rule); background: none; color: var(--mid); cursor: pointer; white-space: nowrap; }
+.seg button + button { border-left: 0; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; font-weight: 500; }
+.seg + input { margin-top: 8px; }
 .msg { display: none; align-items: center; gap: 4px; color: var(--mid); padding-top: 3px; }
 .msg svg.i { width: 14px; height: 14px; }
 .msg.on { display: flex; }
@@ -86,7 +92,11 @@ dialog::backdrop { background: rgba(0,0,0,.25); }
     <h2>Name</h2>
     <div class="field"><label for="firstname">First name<span class="req">Required</span></label><input id="firstname" autocomplete="given-name" placeholder="Firstname"><div class="msg" data-for="firstname"></div></div>
     <div class="field"><label for="lastname">Last name<span class="req">Required</span></label><input id="lastname" autocomplete="family-name" placeholder="Lastname"><div class="msg" data-for="lastname"></div></div>
-    <div class="field"><label for="pronouns">Pronouns<span class="req">Required</span></label><input id="pronouns" placeholder="she/her"><div class="msg" data-for="pronouns"></div></div>
+    <div class="field"><label>Pronouns</label>
+      <div class="seg" id="pronounSeg">
+        <button data-mode="off" aria-pressed="true">Off</button><button data-mode="he/him" aria-pressed="false">he/him</button><button data-mode="she/her" aria-pressed="false">she/her</button><button data-mode="they/them" aria-pressed="false">they/them</button><button data-mode="custom" aria-pressed="false">Custom</button>
+      </div>
+      <input id="pronouns" placeholder="Type pronouns" hidden><div class="msg" data-for="pronouns"></div></div>
   </section>
 
   <section>
@@ -153,7 +163,7 @@ const LOGO_W = 200, LOGO_H = 48;
 const LINK = 'https://jamforcam.com';
 
 const FIELDS = ['firstname', 'lastname', 'pronouns', 'title', 'email', 'phone', 'website'];
-const state = { values: { website: 'jamforcam.com' }, logo: 'black', touched: {}, notes: {} };
+const state = { values: { website: 'jamforcam.com' }, logo: 'black', pronounMode: 'off', touched: {}, notes: {} };
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -185,7 +195,7 @@ function validate() {
     if (v(f).includes('@')) add(f, 'block', 'Looks like an email — names can’t include @');
     else if (/\d/.test(v(f))) add(f, 'warn', 'Names usually don’t include numbers');
   }
-  if (v('pronouns').includes('@')) add('pronouns', 'block', 'Looks like an email address');
+  if (state.pronounMode === 'custom' && v('pronouns').includes('@')) add('pronouns', 'block', 'Looks like an email address');
   const t = v('title');
   if (t.includes('@')) add('title', 'block', 'Looks like an email address', v('email') ? null : 'Move to Email');
   else if (t.replace(/\D/g, '').length >= 7) add('title', 'block', 'Looks like a phone number', v('phone') ? null : 'Move to Phone');
@@ -202,7 +212,7 @@ function validate() {
 }
 
 /* ---- The signature: tables + inline styles, which is what Gmail keeps ---- */
-const SAMPLE = { firstname: 'Firstname', lastname: 'Lastname', pronouns: 'she/her', title: 'Person’s Title Here',
+const SAMPLE = { firstname: 'Firstname', lastname: 'Lastname', pronouns: 'pronouns', title: 'Person’s Title Here',
   email: 'email@jamforcam.com', phone: '123–456–7890', website: 'jamforcam.com' };
 // preview = true shows sample text in gray for empty fields; the copied version is always complete.
 function signatureHTML(logoSrc, preview) {
@@ -225,7 +235,7 @@ function signatureHTML(logoSrc, preview) {
     `<tr><td width="200" style="width:200px;height:0;border-top:0.5px solid #000000;font-size:0;line-height:0;padding:0;">&nbsp;</td></tr>`,
     space(25),
     row(name, true),
-    row(show('pronouns')),
+    ...(state.pronounMode === 'off' ? [] : [row(state.pronounMode === 'custom' ? show('pronouns') : esc(state.pronounMode))]),
     space(12),
     row(show('title')),
     row(show('email', (h, v) => `<a href="mailto:${h}" style="${a}">${h}</a>`)),
@@ -256,7 +266,7 @@ function render() {
     } else { el.className = 'msg'; el.innerHTML = ''; }
   });
   const LABELS = { firstname: 'First name', lastname: 'Last name', pronouns: 'Pronouns', title: 'Title', email: 'Email', phone: 'Phone', website: 'Website' };
-  const missing = FIELDS.filter(f => !clean(f, state.values[f]));
+  const missing = FIELDS.filter(f => (f !== 'pronouns' || state.pronounMode === 'custom') && !clean(f, state.values[f]));
   const ready = !missing.length;
   $('copy').disabled = !ready || blocked;
   if (!ready) $('status').textContent = 'Still needed: ' + missing.map(f => LABELS[f]).join(', ');
@@ -302,6 +312,15 @@ FIELDS.forEach(f => {
   el.addEventListener('blur', () => { state.touched[f] = true; if (f === 'phone') state.notes.phone = ''; render(); });
 });
 document.addEventListener('mousedown', e => { const b = e.target.closest('.fix'); if (b) { e.preventDefault(); moveTo(b.dataset.from, b.dataset.to); } });
+
+$('pronounSeg').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.pronounMode = b.dataset.mode;
+  $('pronounSeg').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $('pronouns').hidden = state.pronounMode !== 'custom';
+  if (state.pronounMode === 'custom') $('pronouns').focus();
+  clearDone(); render();
+};
 
 function buildSwatches() {
   const box = $('swatches');
