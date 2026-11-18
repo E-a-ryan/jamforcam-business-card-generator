@@ -90,8 +90,7 @@ dialog::backdrop { background: rgba(0,0,0,.25); }
 
   <section>
     <h2>Name</h2>
-    <div class="field"><label for="firstname">First name<span class="req">Required</span></label><input id="firstname" autocomplete="given-name" placeholder="Firstname"><div class="msg" data-for="firstname"></div></div>
-    <div class="field"><label for="lastname">Last name<span class="req">Required</span></label><input id="lastname" autocomplete="family-name" placeholder="Lastname"><div class="msg" data-for="lastname"></div></div>
+    <div class="field"><label for="name">Name<span class="req">Required</span></label><input id="name" autocomplete="name" placeholder="Firstname Lastname"><div class="msg" data-for="name"></div></div>
     <div class="field"><label>Pronouns</label>
       <div class="seg" id="pronounSeg">
         <button data-mode="off" aria-pressed="true">Off</button><button data-mode="he/him" aria-pressed="false">he/him</button><button data-mode="she/her" aria-pressed="false">she/her</button><button data-mode="they/them" aria-pressed="false">they/them</button><button data-mode="custom" aria-pressed="false">Custom</button>
@@ -162,7 +161,7 @@ const LOGO_PREVIEW = {"black": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZ
 const LOGO_W = 200, LOGO_H = 48;
 const LINK = 'https://jamforcam.com';
 
-const FIELDS = ['firstname', 'lastname', 'pronouns', 'title', 'email', 'phone', 'website'];
+const FIELDS = ['name', 'pronouns', 'title', 'email', 'phone', 'website'];
 const state = { values: { website: 'jamforcam.com' }, logo: 'black', pronounMode: 'off', touched: {}, notes: {} };
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -191,10 +190,8 @@ function validate() {
   const v = k => (state.values[k] || '').trim();
   const out = {};
   const add = (f, level, msg, action) => (out[f] = out[f] || []).push({ level, msg, action });
-  for (const f of ['firstname', 'lastname']) {
-    if (v(f).includes('@')) add(f, 'block', 'Looks like an email — names can’t include @');
-    else if (/\d/.test(v(f))) add(f, 'warn', 'Names usually don’t include numbers');
-  }
+  if (v('name').includes('@')) add('name', 'block', 'Looks like an email — names can’t include @');
+  else if (/\d/.test(v('name'))) add('name', 'warn', 'Names usually don’t include numbers');
   if (state.pronounMode === 'custom' && v('pronouns').includes('@')) add('pronouns', 'block', 'Looks like an email address');
   const t = v('title');
   if (t.includes('@')) add('title', 'block', 'Looks like an email address', v('email') ? null : 'Move to Email');
@@ -212,7 +209,7 @@ function validate() {
 }
 
 /* ---- The signature: tables + inline styles, which is what Gmail keeps ---- */
-const SAMPLE = { firstname: 'Firstname', lastname: 'Lastname', pronouns: 'pronouns', title: 'Person’s Title Here',
+const SAMPLE = { name: 'Firstname Lastname', pronouns: 'pronouns', title: 'Person’s Title Here',
   email: 'email@jamforcam.com', phone: '123–456–7890', website: 'jamforcam.com' };
 // preview = true shows sample text in gray for empty fields; the copied version is always complete.
 function signatureHTML(logoSrc, preview) {
@@ -228,9 +225,7 @@ function signatureHTML(logoSrc, preview) {
   const nameTd = 'font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:100%;color:#000000;padding:0;font-weight:bold;';
   const row = (html, bold) => `<tr><td style="${bold ? nameTd : td}">${html}</td></tr>`;
   const space = px => `<tr><td style="height:${px}px;line-height:${px}px;font-size:1px;padding:0;">&nbsp;</td></tr>`;
-  const name = (val('firstname') || val('lastname'))
-    ? esc((val('firstname') + ' ' + val('lastname')).trim())
-    : `<span style="color:#bbbbbb;">${esc(SAMPLE.firstname + ' ' + SAMPLE.lastname)}</span>`;
+  const name = show('name');
   const rows = [
     `<tr><td width="200" style="width:200px;height:0;border-top:0.5px solid #000000;font-size:0;line-height:0;padding:0;">&nbsp;</td></tr>`,
     space(25),
@@ -265,7 +260,7 @@ function render() {
         w.filter(x => x.action).map(x => `<button class="fix" data-from="${el.dataset.for}" data-to="${x.action.split(' ').pop().toLowerCase()}">${x.action}</button>`).join('');
     } else { el.className = 'msg'; el.innerHTML = ''; }
   });
-  const LABELS = { firstname: 'First name', lastname: 'Last name', pronouns: 'Pronouns', title: 'Title', email: 'Email', phone: 'Phone', website: 'Website' };
+  const LABELS = { name: 'Name', pronouns: 'Pronouns', title: 'Title', email: 'Email', phone: 'Phone', website: 'Website' };
   const missing = FIELDS.filter(f => (f !== 'pronouns' || state.pronounMode === 'custom') && !clean(f, state.values[f]));
   const ready = !missing.length;
   $('copy').disabled = !ready || blocked;
