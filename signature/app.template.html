@@ -86,15 +86,15 @@ dialog::backdrop { background: rgba(0,0,0,.25); }
     <h2>Name</h2>
     <div class="field"><label for="firstname">First name<span class="req">Required</span></label><input id="firstname" autocomplete="given-name" placeholder="Firstname"><div class="msg" data-for="firstname"></div></div>
     <div class="field"><label for="lastname">Last name<span class="req">Required</span></label><input id="lastname" autocomplete="family-name" placeholder="Lastname"><div class="msg" data-for="lastname"></div></div>
-    <div class="field"><label for="pronouns">Pronouns</label><input id="pronouns" placeholder="she/her"><div class="msg" data-for="pronouns"></div></div>
+    <div class="field"><label for="pronouns">Pronouns<span class="req">Required</span></label><input id="pronouns" placeholder="she/her"><div class="msg" data-for="pronouns"></div></div>
   </section>
 
   <section>
-    <h2>Details <span class="note">Empty lines are removed</span></h2>
-    <div class="field"><label for="title">Title</label><input id="title" autocomplete="organization-title" placeholder="Person’s Title Here"><div class="msg" data-for="title"></div></div>
-    <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="email@jamforcam.com"><div class="msg" data-for="email"></div></div>
-    <div class="field"><label for="phone">Phone</label><input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="123–456–7890"><div class="msg" data-for="phone"></div></div>
-    <div class="field"><label for="website">Website</label><input id="website" autocomplete="url" value="jamforcam.com" placeholder="jamforcam.com"><div class="msg" data-for="website"></div></div>
+    <h2>Details</h2>
+    <div class="field"><label for="title">Title<span class="req">Required</span></label><input id="title" autocomplete="organization-title" placeholder="Person’s Title Here"><div class="msg" data-for="title"></div></div>
+    <div class="field"><label for="email">Email<span class="req">Required</span></label><input id="email" type="email" autocomplete="email" placeholder="email@jamforcam.com"><div class="msg" data-for="email"></div></div>
+    <div class="field"><label for="phone">Phone<span class="req">Required</span></label><input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="123–456–7890"><div class="msg" data-for="phone"></div></div>
+    <div class="field"><label for="website">Website<span class="req">Required</span></label><input id="website" autocomplete="url" value="jamforcam.com" placeholder="jamforcam.com"><div class="msg" data-for="website"></div></div>
   </section>
 
   <section>
@@ -110,7 +110,7 @@ dialog::backdrop { background: rgba(0,0,0,.25); }
 </aside>
 
 <main>
-  <div class="bar"><span>Gmail signature &nbsp;·&nbsp; Helvetica 10 px &nbsp;·&nbsp; logo 200 px</span></div>
+  <div class="bar"><span>Gmail signature &nbsp;·&nbsp; Helvetica 12 px &nbsp;·&nbsp; logo 200 px</span></div>
   <div class="stage">
     <figure>
       <figcaption>Preview<span>Actual size</span></figcaption>
@@ -192,43 +192,60 @@ function validate() {
   else if (/https?:|www\.|\.(com|org|net)\b/i.test(t)) add('title', 'block', 'Looks like a web address', v('website') && v('website') !== 'jamforcam.com' ? null : 'Move to Website');
   const e = v('email');
   if (e && /\s/.test(e)) add('email', 'block', 'Email can’t contain spaces');
-  else if (e && state.touched.email && !EMAIL_RE.test(e)) add('email', 'block', 'Check the email address');
+  else if (e && !EMAIL_RE.test(e)) add('email', state.touched.email ? 'block' : 'hold', 'Check the email address');
   const d = v('phone').replace(/\D/g, '');
   if (state.notes.phone) add('phone', 'warn', state.notes.phone);
-  if (d && d.length < 10 && state.touched.phone) add('phone', 'block', 'Phone needs 10 digits (' + d.length + ' so far)');
+  if (d && d.length < 10) add('phone', state.touched.phone ? 'block' : 'hold', 'Phone needs 10 digits (' + d.length + ' so far)');
   const w = v('website');
   if (w && (/\s/.test(w) || !/\.[a-z]{2,}/i.test(w))) add('website', 'block', 'Check the web address');
   return out;
 }
 
 /* ---- The signature: tables + inline styles, which is what Gmail keeps ---- */
-function signatureHTML(logoSrc) {
+const SAMPLE = { firstname: 'Firstname', lastname: 'Lastname', pronouns: 'she/her', title: 'Person’s Title Here',
+  email: 'email@jamforcam.com', phone: '123–456–7890', website: 'jamforcam.com' };
+// preview = true shows sample text in gray for empty fields; the copied version is always complete.
+function signatureHTML(logoSrc, preview) {
   const val = f => clean(f, state.values[f]);
-  const td = 'font-family:Helvetica,Arial,sans-serif;font-size:10px;line-height:100%;color:#000000;padding:0;';
+  const td = 'font-family:Helvetica,Arial,sans-serif;font-size:12px;line-height:100%;color:#000000;padding:0;';
   const a = 'color:#000000;text-decoration:none;';
+  const show = (f, wrap) => {
+    const v = val(f);
+    if (!v) return `<span style="color:#bbbbbb;">${esc(SAMPLE[f])}</span>`;
+    return wrap ? wrap(esc(v), v) : esc(v);
+  };
   const row = (html, bold) => `<tr><td style="${td}${bold ? 'font-weight:bold;' : ''}">${html}</td></tr>`;
-  const gap = `<tr><td style="font-size:10px;line-height:10px;height:10px;padding:0;">&nbsp;</td></tr>`;
-  const name = (val('firstname') + ' ' + val('lastname')).trim();
-  const rows = [];
-  rows.push(row(esc(name || 'Firstname Lastname'), true));
-  if (val('pronouns')) rows.push(row(esc(val('pronouns'))));
-  const info = [];
-  if (val('title')) info.push(row(esc(val('title'))));
-  if (val('email')) info.push(row(`<a href="mailto:${esc(val('email'))}" style="${a}">${esc(val('email'))}</a>`));
-  if (val('phone')) info.push(row(`<a href="tel:+1${esc(val('phone').replace(/\D/g, ''))}" style="${a}">${esc(val('phone'))}</a>`));
-  if (val('website')) info.push(row(`<a href="https://${esc(val('website'))}" style="${a}">${esc(val('website'))}</a>`));
-  if (info.length) rows.push(gap, ...info);
-  rows.push(gap, `<tr><td style="padding:0;"><a href="${LINK}" style="${a}"><img src="${logoSrc}" width="${LOGO_W}" height="${LOGO_H}" alt="Jam for Cam" style="display:block;border:0;outline:none;width:${LOGO_W}px;height:auto;"></a></td></tr>`);
+  const space = px => `<tr><td style="height:${px}px;line-height:${px}px;font-size:1px;padding:0;">&nbsp;</td></tr>`;
+  const name = (val('firstname') || val('lastname'))
+    ? esc((val('firstname') + ' ' + val('lastname')).trim())
+    : `<span style="color:#bbbbbb;">${esc(SAMPLE.firstname + ' ' + SAMPLE.lastname)}</span>`;
+  const rows = [
+    `<tr><td width="200" style="width:200px;height:0;border-top:0.5px solid #000000;font-size:0;line-height:0;padding:0;">&nbsp;</td></tr>`,
+    space(25),
+    row(name, true),
+    row(show('pronouns')),
+    space(12),
+    row(show('title')),
+    row(show('email', (h, v) => `<a href="mailto:${h}" style="${a}">${h}</a>`)),
+    row(show('phone', (h, v) => `<a href="tel:+1${v.replace(/\D/g, '')}" style="${a}">${h}</a>`)),
+    row(show('website', (h) => `<a href="https://${h}" style="${a}">${h}</a>`)),
+    space(25),
+    `<tr><td style="padding:0;"><a href="${LINK}" style="${a}"><img src="${logoSrc}" width="${LOGO_W}" height="${LOGO_H}" alt="Jam for Cam" style="display:block;border:0;outline:none;width:${LOGO_W}px;height:auto;"></a></td></tr>`,
+  ];
   return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">${rows.join('')}</table>`;
 }
 
 function render() {
-  $('preview').innerHTML = signatureHTML(LOGO_PREVIEW[state.logo]);
+  $('preview').innerHTML = signatureHTML(LOGO_PREVIEW[state.logo], true);
   const warnings = validate();
   let blocked = false;
+  const holds = [];
   document.querySelectorAll('.msg').forEach(el => {
-    const w = warnings[el.dataset.for];
-    if (w && w.length) {
+    const all = warnings[el.dataset.for] || [];
+    all.filter(x => x.level === 'hold').forEach(x => holds.push(x.msg));
+    if (all.some(x => x.level === 'hold')) blocked = true;
+    const w = all.filter(x => x.level !== 'hold');
+    if (w.length) {
       const isBlock = w.some(x => x.level === 'block');
       blocked = blocked || isBlock;
       el.className = 'msg on' + (isBlock ? ' block' : '');
@@ -236,9 +253,12 @@ function render() {
         w.filter(x => x.action).map(x => `<button class="fix" data-from="${el.dataset.for}" data-to="${x.action.split(' ').pop().toLowerCase()}">${x.action}</button>`).join('');
     } else { el.className = 'msg'; el.innerHTML = ''; }
   });
-  const ready = clean('firstname', state.values.firstname) && clean('lastname', state.values.lastname);
+  const LABELS = { firstname: 'First name', lastname: 'Last name', pronouns: 'Pronouns', title: 'Title', email: 'Email', phone: 'Phone', website: 'Website' };
+  const missing = FIELDS.filter(f => !clean(f, state.values[f]));
+  const ready = !missing.length;
   $('copy').disabled = !ready || blocked;
-  if (!ready) $('status').textContent = 'Add a first and last name to copy.';
+  if (!ready) $('status').textContent = 'Still needed: ' + missing.map(f => LABELS[f]).join(', ');
+  else if (blocked) $('status').textContent = holds.length ? holds.join(' · ') : 'Fix the highlighted fields to copy.';
   else if ($('status').dataset.kind !== 'done') $('status').textContent = '';
 }
 

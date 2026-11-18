@@ -10,8 +10,8 @@ A single-file, offline web tool that lets Jam for Cam staff fill in their detail
 
 A second tool in `signature/`. It's live at https://e-a-ryan.github.io/jamforcam-business-card-generator/signature/ and also builds as `dist/JamforCam_EmailSignature_Generator.html`.
 
-- Fields: first and last name (required), pronouns, title, email, phone, website (defaults to jamforcam.com). The same input checks as the card tool.
-- Output: Helvetica 10 px, 100% line height, all black, with the name in bold. The logo is 200 px wide in a choice of 7 colors and links to jamforcam.com. Built from tables with inline styles, so it survives Gmail.
+- Fields: first name, last name, pronouns, title, email, phone and website (filled in with jamforcam.com). All are required, and copying stays off until every field is filled in and valid. The preview shows sample text in gray for empty fields. The same input checks as the card tool.
+- Output: a 200 px, 0.5 px black rule, 25 px of space, then the name in bold, pronouns, title, email, phone and website in Helvetica 12 px at 100% line height, all black. Another 25 px of space, then the logo at 200 px wide in a choice of 7 colors, linking to jamforcam.com. Built from tables with inline styles, so it survives Gmail.
 - **Copy signature** copies formatted content to paste into Gmail's signature box. **How to add signature** opens step-by-step Gmail instructions.
 - Logos are PNGs at `docs/signature/logos/`, rendered at 400 px (2x) from `signature/JamForCam_Logo.svg`. Gmail can't show images built into a signature, so the copied signature links to these files on GitHub Pages. **Pages must be on for the logo to appear.**
 - Change logo colors in `signature/logo-colors.json`, then run `node scripts/make_logo_pngs.js` (needs `sharp`) and `python3 scripts/build_signature.py`.
