@@ -6,6 +6,16 @@ A single-file, offline web tool that lets Jam for Cam staff fill in their detail
 
 **To hand off as a file:** send `dist/JamforCam_BusinessCard_Generator.html`. It opens in any modern browser, works offline, and has everything (fonts, templates, PDF engine) built in.
 
+## Email signature generator
+
+A second tool in `signature/`. It's live at https://e-a-ryan.github.io/jamforcam-business-card-generator/signature/ and also builds as `dist/JamforCam_EmailSignature_Generator.html`.
+
+- Fields: first and last name (required), pronouns, title, email, phone, website (defaults to jamforcam.com). The same input checks as the card tool.
+- Output: Helvetica 10 px, 100% line height, all black, with the name in bold. The logo is 200 px wide in a choice of 7 colors and links to jamforcam.com. Built from tables with inline styles, so it survives Gmail.
+- **Copy signature** copies formatted content to paste into Gmail's signature box. **How to add signature** opens step-by-step Gmail instructions.
+- Logos are PNGs at `docs/signature/logos/`, rendered at 400 px (2x) from `signature/JamForCam_Logo.svg`. Gmail can't show images built into a signature, so the copied signature links to these files on GitHub Pages. **Pages must be on for the logo to appear.**
+- Change logo colors in `signature/logo-colors.json`, then run `node scripts/make_logo_pngs.js` (needs `sharp`) and `python3 scripts/build_signature.py`.
+
 ## What it outputs
 
 Two PDFs per person:
@@ -90,6 +100,8 @@ vendor/                 pdf-lib 1.17.1 (MIT)
 scripts/                build
 dist/                   the built, hand-off-ready tool
 docs/index.html         the same build, published by GitHub Pages
+signature/              email signature generator source, logo SVG, logo colors
+docs/signature/         signature generator + hosted logo PNGs (GitHub Pages)
 ```
 
 ## Notes

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jam for Cam — Email Signature</title>
+<style>
+@font-face { font-family: 'SG'; font-weight: 400; src: url(data:font/ttf;base64,__FONT_REGULAR__) format('truetype'); }
+@font-face { font-family: 'SG'; font-weight: 500; src: url(data:font/ttf;base64,__FONT_MEDIUM__) format('truetype'); }
+
+:root { --ink: #111; --mid: #777; --soft: #aaa; --rule: #e4e4e4; --bg: #fff; --well: #f6f6f6; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font: 400 13px/1.45 'SG', system-ui, sans-serif; color: var(--ink); background: var(--bg);
+  display: grid; grid-template-columns: 300px 1fr; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+svg.i { width: 18px; height: 18px; fill: currentColor; flex: none; }
+
+aside { border-right: 1px solid var(--rule); display: flex; flex-direction: column; height: 100vh; overflow: auto; }
+.head { padding: 20px 20px 18px; border-bottom: 1px solid var(--rule); }
+.head b { font-weight: 500; display: block; }
+.head span { color: var(--mid); }
+section { padding: 14px 20px 14px; border-bottom: 1px solid var(--rule); }
+h2 { font: inherit; font-weight: 500; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+h2 .note { font-weight: 400; color: var(--soft); margin-left: auto; }
+.field { display: block; padding: 6px 0 5px; }
+.field + .field { border-top: 1px solid var(--rule); }
+.field label { display: flex; color: var(--mid); }
+.field label .req { margin-left: auto; color: var(--soft); }
+.field input { display: block; width: 100%; border: 0; outline: 0; background: none; padding: 2px 0 0; }
+.field input::placeholder { color: #c8c8c8; }
+.msg { display: none; align-items: center; gap: 4px; color: var(--mid); padding-top: 3px; }
+.msg svg.i { width: 14px; height: 14px; }
+.msg.on { display: flex; }
+.msg.block { color: var(--ink); font-weight: 500; }
+.msg .fix { margin-left: auto; border: 0; border-bottom: 1px solid currentColor; background: none; color: var(--ink); font-weight: 500; cursor: pointer; padding: 0; }
+
+.swatches { display: grid; }
+.sw { display: flex; align-items: center; gap: 10px; padding: 6px 0; border: 0; background: none; text-align: left; cursor: pointer; width: 100%; }
+.sw + .sw { border-top: 1px solid var(--rule); }
+.sw .chip { width: 16px; height: 16px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+.sw .lbl { color: var(--mid); }
+.sw .check { margin-left: auto; visibility: hidden; }
+.sw[aria-pressed="true"] .lbl { color: var(--ink); font-weight: 500; }
+.sw[aria-pressed="true"] .check { visibility: visible; }
+
+.actions { margin-top: auto; padding: 16px 20px 20px; border-top: 1px solid var(--rule); display: grid; gap: 10px; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border: 1px solid var(--ink);
+  background: var(--ink); color: #fff; font-weight: 500; cursor: pointer; }
+.btn:disabled { background: none; color: var(--soft); border-color: var(--rule); cursor: not-allowed; }
+.ghost { display: flex; align-items: center; justify-content: center; gap: 6px; height: 34px; border: 1px solid var(--rule);
+  background: none; color: var(--mid); cursor: pointer; }
+.ghost:hover { color: var(--ink); }
+.status { color: var(--soft); }
+.status:empty { display: none; }
+
+main { height: 100vh; display: flex; flex-direction: column; background: var(--well); min-width: 0; }
+.bar { display: flex; align-items: center; height: 57px; padding: 0 20px; border-bottom: 1px solid var(--rule); background: var(--bg); color: var(--mid); }
+.stage { flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+figure { width: min(100%, 560px); }
+figcaption { color: var(--mid); padding-bottom: 8px; display: flex; }
+figcaption span { margin-left: auto; color: var(--soft); }
+.mail { background: #fff; box-shadow: 0 0 0 1px var(--rule); }
+.mail .meta { padding: 14px 20px; border-bottom: 1px solid var(--rule); color: var(--soft); }
+.mail .body { padding: 20px 20px 28px; }
+.mail .greet { font: 13px/1.5 Helvetica, Arial, sans-serif; color: #444; padding-bottom: 18px; }
+
+dialog { margin: auto; border: 1px solid var(--rule); padding: 0; width: min(92vw, 460px); color: var(--ink); background: #fff; }
+dialog::backdrop { background: rgba(0,0,0,.25); }
+.dhead { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--rule); font-weight: 500; }
+.dhead button { margin-left: auto; border: 0; background: none; color: var(--mid); cursor: pointer; display: flex; }
+.dhead button:hover { color: var(--ink); }
+.dbody { padding: 16px 20px 20px; }
+.dbody ol { padding-left: 18px; display: grid; gap: 8px; }
+.dbody li::marker { color: var(--soft); }
+.dbody b { font-weight: 500; }
+.dbody .tip { color: var(--mid); border-top: 1px solid var(--rule); margin-top: 16px; padding-top: 12px; display: grid; gap: 6px; }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="head"><b>Jam for Cam</b><span>Email Signature Generator</span></div>
+
+  <section>
+    <h2>Name</h2>
+    <div class="field"><label for="firstname">First name<span class="req">Required</span></label><input id="firstname" autocomplete="given-name" placeholder="Firstname"><div class="msg" data-for="firstname"></div></div>
+    <div class="field"><label for="lastname">Last name<span class="req">Required</span></label><input id="lastname" autocomplete="family-name" placeholder="Lastname"><div class="msg" data-for="lastname"></div></div>
+    <div class="field"><label for="pronouns">Pronouns</label><input id="pronouns" placeholder="she/her"><div class="msg" data-for="pronouns"></div></div>
+  </section>
+
+  <section>
+    <h2>Details <span class="note">Empty lines are removed</span></h2>
+    <div class="field"><label for="title">Title</label><input id="title" autocomplete="organization-title" placeholder="Person’s Title Here"><div class="msg" data-for="title"></div></div>
+    <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="email@jamforcam.com"><div class="msg" data-for="email"></div></div>
+    <div class="field"><label for="phone">Phone</label><input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="123–456–7890"><div class="msg" data-for="phone"></div></div>
+    <div class="field"><label for="website">Website</label><input id="website" autocomplete="url" value="jamforcam.com" placeholder="jamforcam.com"><div class="msg" data-for="website"></div></div>
+  </section>
+
+  <section>
+    <h2>Logo color</h2>
+    <div class="swatches" id="swatches"></div>
+  </section>
+
+  <div class="actions">
+    <button class="btn" id="copy" disabled><svg class="i" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>Copy signature</button>
+    <button class="ghost" id="howto"><svg class="i" viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>How to add signature</button>
+    <div class="status" id="status"></div>
+  </div>
+</aside>
+
+<main>
+  <div class="bar"><span>Gmail signature &nbsp;·&nbsp; Helvetica 10 px &nbsp;·&nbsp; logo 200 px</span></div>
+  <div class="stage">
+    <figure>
+      <figcaption>Preview<span>Actual size</span></figcaption>
+      <div class="mail">
+        <div class="meta">New message</div>
+        <div class="body"><div class="greet">Hi there,<br><br>Looking forward to it.</div><div id="preview"></div></div>
+      </div>
+    </figure>
+  </div>
+</main>
+
+<dialog id="dialog" aria-labelledby="dtitle">
+  <div class="dhead"><span id="dtitle">Add your signature in Gmail</span>
+    <button id="dclose" aria-label="Close"><svg class="i" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <div class="dbody">
+    <ol>
+      <li>Fill in your details here, then click <b>Copy signature</b>.</li>
+      <li>Open Gmail on a computer. Click the <b>gear icon</b> at the top right, then <b>See all settings</b>.</li>
+      <li>On the <b>General</b> tab, scroll down to <b>Signature</b> and click <b>Create new</b>. Name it “Jam for Cam”.</li>
+      <li>Click inside the signature box and paste: <b>Cmd + V</b> on a Mac, <b>Ctrl + V</b> on Windows.</li>
+      <li>Under <b>Signature defaults</b>, choose it for <b>new emails</b> and for <b>replies and forwards</b>.</li>
+      <li>Scroll to the bottom of the page and click <b>Save Changes</b>.</li>
+    </ol>
+    <div class="tip">
+      <span>Send yourself a test email to check it.</span>
+      <span>Don’t retype or edit the signature in Gmail. To change it, make a new one here and paste it over the old one.</span>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* ==========================================================================
+   Logo PNGs live on GitHub Pages: Gmail can't show images built into a
+   signature, so the copied signature points at these hosted files.
+   ========================================================================== */
+const LOGO_BASE = 'https://e-a-ryan.github.io/jamforcam-business-card-generator/signature/logos/';
+const LOGO_COLORS = __LOGO_COLORS__;
+const LOGO_PREVIEW = __LOGO_PREVIEW__;   // the same PNGs, built in, so the preview works offline
+const LOGO_W = 200, LOGO_H = 48;
+const LINK = 'https://jamforcam.com';
+
+const FIELDS = ['firstname', 'lastname', 'pronouns', 'title', 'email', 'phone', 'website'];
+const state = { values: { website: 'jamforcam.com' }, logo: 'black', touched: {}, notes: {} };
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+const ICON_WARN = '<svg class="i" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
+const ICON_CHECK = '<svg class="i check" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+
+/* ---- Cleaning + checks (same rules as the business card tool) ---- */
+const DASH = '–';
+const smartQuotes = s => s.replace(/(^|[\s(\[{“‘-])'/g, '$1‘').replace(/'/g, '’').replace(/(^|[\s(\[{‘-])"/g, '$1“').replace(/"/g, '”');
+function clean(field, v) {
+  v = (v || '').replace(/\s+/g, ' ').trim();
+  if (!v) return '';
+  if (field === 'email') return v;
+  if (field === 'website') return v.replace(/^https?:\/\//i, '').replace(/\/$/, '');
+  if (field === 'phone') return v;
+  return smartQuotes(v);
+}
+function formatDigits(d) {
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return d.slice(0, 3) + DASH + d.slice(3);
+  return d.slice(0, 3) + DASH + d.slice(3, 6) + DASH + d.slice(6);
+}
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+function validate() {
+  const v = k => (state.values[k] || '').trim();
+  const out = {};
+  const add = (f, level, msg, action) => (out[f] = out[f] || []).push({ level, msg, action });
+  for (const f of ['firstname', 'lastname']) {
+    if (v(f).includes('@')) add(f, 'block', 'Looks like an email — names can’t include @');
+    else if (/\d/.test(v(f))) add(f, 'warn', 'Names usually don’t include numbers');
+  }
+  if (v('pronouns').includes('@')) add('pronouns', 'block', 'Looks like an email address');
+  const t = v('title');
+  if (t.includes('@')) add('title', 'block', 'Looks like an email address', v('email') ? null : 'Move to Email');
+  else if (t.replace(/\D/g, '').length >= 7) add('title', 'block', 'Looks like a phone number', v('phone') ? null : 'Move to Phone');
+  else if (/https?:|www\.|\.(com|org|net)\b/i.test(t)) add('title', 'block', 'Looks like a web address', v('website') && v('website') !== 'jamforcam.com' ? null : 'Move to Website');
+  const e = v('email');
+  if (e && /\s/.test(e)) add('email', 'block', 'Email can’t contain spaces');
+  else if (e && state.touched.email && !EMAIL_RE.test(e)) add('email', 'block', 'Check the email address');
+  const d = v('phone').replace(/\D/g, '');
+  if (state.notes.phone) add('phone', 'warn', state.notes.phone);
+  if (d && d.length < 10 && state.touched.phone) add('phone', 'block', 'Phone needs 10 digits (' + d.length + ' so far)');
+  const w = v('website');
+  if (w && (/\s/.test(w) || !/\.[a-z]{2,}/i.test(w))) add('website', 'block', 'Check the web address');
+  return out;
+}
+
+/* ---- The signature: tables + inline styles, which is what Gmail keeps ---- */
+function signatureHTML(logoSrc) {
+  const val = f => clean(f, state.values[f]);
+  const td = 'font-family:Helvetica,Arial,sans-serif;font-size:10px;line-height:100%;color:#000000;padding:0;';
+  const a = 'color:#000000;text-decoration:none;';
+  const row = (html, bold) => `<tr><td style="${td}${bold ? 'font-weight:bold;' : ''}">${html}</td></tr>`;
+  const gap = `<tr><td style="font-size:10px;line-height:10px;height:10px;padding:0;">&nbsp;</td></tr>`;
+  const name = (val('firstname') + ' ' + val('lastname')).trim();
+  const rows = [];
+  rows.push(row(esc(name || 'Firstname Lastname'), true));
+  if (val('pronouns')) rows.push(row(esc(val('pronouns'))));
+  const info = [];
+  if (val('title')) info.push(row(esc(val('title'))));
+  if (val('email')) info.push(row(`<a href="mailto:${esc(val('email'))}" style="${a}">${esc(val('email'))}</a>`));
+  if (val('phone')) info.push(row(`<a href="tel:+1${esc(val('phone').replace(/\D/g, ''))}" style="${a}">${esc(val('phone'))}</a>`));
+  if (val('website')) info.push(row(`<a href="https://${esc(val('website'))}" style="${a}">${esc(val('website'))}</a>`));
+  if (info.length) rows.push(gap, ...info);
+  rows.push(gap, `<tr><td style="padding:0;"><a href="${LINK}" style="${a}"><img src="${logoSrc}" width="${LOGO_W}" height="${LOGO_H}" alt="Jam for Cam" style="display:block;border:0;outline:none;width:${LOGO_W}px;height:auto;"></a></td></tr>`);
+  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">${rows.join('')}</table>`;
+}
+
+function render() {
+  $('preview').innerHTML = signatureHTML(LOGO_PREVIEW[state.logo]);
+  const warnings = validate();
+  let blocked = false;
+  document.querySelectorAll('.msg').forEach(el => {
+    const w = warnings[el.dataset.for];
+    if (w && w.length) {
+      const isBlock = w.some(x => x.level === 'block');
+      blocked = blocked || isBlock;
+      el.className = 'msg on' + (isBlock ? ' block' : '');
+      el.innerHTML = ICON_WARN + '<span>' + w.map(x => x.msg).join(' · ') + '</span>' +
+        w.filter(x => x.action).map(x => `<button class="fix" data-from="${el.dataset.for}" data-to="${x.action.split(' ').pop().toLowerCase()}">${x.action}</button>`).join('');
+    } else { el.className = 'msg'; el.innerHTML = ''; }
+  });
+  const ready = clean('firstname', state.values.firstname) && clean('lastname', state.values.lastname);
+  $('copy').disabled = !ready || blocked;
+  if (!ready) $('status').textContent = 'Add a first and last name to copy.';
+  else if ($('status').dataset.kind !== 'done') $('status').textContent = '';
+}
+
+/* ---- Inputs ---- */
+let lastPhoneDigits = '';
+function onPhone(ev) {
+  const el = $('phone');
+  const raw = el.value;
+  const caret = el.selectionStart == null ? raw.length : el.selectionStart;
+  let before = raw.slice(0, caret).replace(/\D/g, '').length;
+  let d = raw.replace(/\D/g, '');
+  let note = '';
+  if (/[^\d\s().\-–—+]/.test(raw)) note = 'Numbers only — other characters were removed';
+  if (ev && ev.inputType === 'deleteContentBackward' && d === lastPhoneDigits && before > 0) { d = d.slice(0, before - 1) + d.slice(before); before--; }
+  if (d[0] === '1' || d[0] === '0') { if (d[0] === '1' && d.length > 10) note = note || 'Country code removed'; d = d.replace(/^[01]+/, ''); before = Math.max(0, before - 1); }
+  if (d.length > 10) { d = d.slice(0, 10); note = 'Phone numbers are 10 digits'; }
+  const f = formatDigits(d);
+  el.value = f;
+  let pos = 0, seen = 0;
+  while (pos < f.length && seen < before) { if (/\d/.test(f[pos])) seen++; pos++; }
+  if (document.activeElement === el) el.setSelectionRange(pos, pos);
+  lastPhoneDigits = d;
+  state.values.phone = f;
+  if (note) state.notes.phone = note;
+  if (!d) state.notes.phone = '';
+  clearDone(); render();
+}
+function clearDone() { $('status').dataset.kind = ''; $('status').textContent = ''; }
+function moveTo(from, to) {
+  const el = $(to); el.value = $(from).value.trim(); $(from).value = '';
+  state.values[to] = el.value; state.values[from] = '';
+  if (to === 'phone') onPhone(); else render();
+  el.focus();
+}
+FIELDS.forEach(f => {
+  const el = $(f);
+  if (f === 'phone') el.addEventListener('input', onPhone);
+  else el.addEventListener('input', () => { state.values[f] = el.value; clearDone(); render(); });
+  el.addEventListener('blur', () => { state.touched[f] = true; if (f === 'phone') state.notes.phone = ''; render(); });
+});
+document.addEventListener('mousedown', e => { const b = e.target.closest('.fix'); if (b) { e.preventDefault(); moveTo(b.dataset.from, b.dataset.to); } });
+
+function buildSwatches() {
+  const box = $('swatches');
+  box.innerHTML = LOGO_COLORS.map(c => `<button class="sw" data-id="${c.id}" aria-pressed="${state.logo === c.id}">
+    <span class="chip" style="background:${c.hex}"></span><span class="lbl">${c.label}</span>${ICON_CHECK}</button>`).join('');
+  box.onclick = e => {
+    const b = e.target.closest('.sw'); if (!b) return;
+    state.logo = b.dataset.id;
+    box.querySelectorAll('.sw').forEach(x => x.setAttribute('aria-pressed', x.dataset.id === state.logo));
+    clearDone(); render();
+  };
+}
+
+/* ---- Copy as formatted content, so it pastes into Gmail's signature box ---- */
+$('copy').onclick = async () => {
+  const html = signatureHTML(LOGO_BASE + 'jamforcam-logo-' + state.logo + '.png');
+  const holder = document.createElement('div');
+  holder.innerHTML = html;
+  const text = holder.innerText;
+  let ok = false;
+  try {
+    if (navigator.clipboard && window.ClipboardItem) {
+      await navigator.clipboard.write([new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([text], { type: 'text/plain' }) })]);
+      ok = true;
+    }
+  } catch (e) {}
+  if (!ok) {
+    holder.style.cssText = 'position:fixed;left:-9999px;top:0;';
+    document.body.appendChild(holder);
+    const r = document.createRange(); r.selectNodeContents(holder);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    sel.removeAllRanges(); holder.remove();
+  }
+  $('status').dataset.kind = ok ? 'done' : '';
+  $('status').textContent = ok ? 'Copied. Now paste it into Gmail.' : 'Couldn’t copy here. Select the preview and copy it instead.';
+};
+
+/* ---- How-to popup ---- */
+const dlg = $('dialog');
+$('howto').onclick = () => dlg.showModal();
+$('dclose').onclick = () => dlg.close();
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+buildSwatches();
+render();
+</script>
+</body>
+</html>

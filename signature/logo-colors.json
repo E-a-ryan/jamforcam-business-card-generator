@@ -1,0 +1,9 @@
+[
+  { "id": "black",  "label": "Black",  "hex": "#000000" },
+  { "id": "red",    "label": "Red",    "hex": "#fb2d48" },
+  { "id": "orange", "label": "Orange", "hex": "#fe5f00" },
+  { "id": "yellow", "label": "Yellow", "hex": "#ffce15" },
+  { "id": "lime",   "label": "Lime",   "hex": "#d7e141" },
+  { "id": "blue",   "label": "Blue",   "hex": "#4ac8ff" },
+  { "id": "purple", "label": "Purple", "hex": "#a785ff" }
+]
